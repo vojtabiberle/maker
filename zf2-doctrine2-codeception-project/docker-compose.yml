@@ -1,0 +1,30 @@
+front:
+  image: vojtabiberle/apache-php7
+  environment:
+    APACHE_DOCUMENTROOT: '/var/www/website/htdocs'
+  ports:
+    - "80:80"
+  volumes:
+    - ./:/var/www/website
+  links:
+    - mysql:mysql
+
+mysql:
+  image: vojtabiberle/mariadb
+  ports:
+    - "3306:3306"
+  volumes:
+    - ./database:/var/lib/mysql
+
+composer:  
+   image: vojtabiberle/composer
+   volumes:
+     - ./:/var/www/website
+     - ~/.composer:/composer
+
+nodejs:
+  image: spiralout/dnodejs
+  environment:
+    DISABLE_NOTIFIER: 'true'
+  volumes:
+     - ./:/var/www

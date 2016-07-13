@@ -1,0 +1,122 @@
+#!/bin/bash
+
+#####
+##### Warning: this si currently unfinished script. Right now supports only running make with some better feeling.
+##### I have more plans with it ;-) Stay in touch ...
+#####
+
+##NOTES
+## http://www.ibm.com/developerworks/library/l-bash-parameters/
+## http://wiki.bash-hackers.org/scripting/posparams
+
+## var=$(command) $(command1 $(command2 $(command3)))
+
+## http://stackoverflow.com/questions/592620/check-if-a-program-exists-from-a-bash-script
+## Where bash is your shell/hashbang, consistently use hash (for commands) or type (to consider built-ins & keywords).
+
+## defaults
+VERSION="0.0.1"
+MAKE=make
+MAKEFILE=Makefile
+SILENT=true
+DEBUG=false
+
+## Print message only when DEBUG=true
+##
+## param 1 - message
+function debug_echo {
+    if ${DEBUG} = true; then
+        echo $1
+    fi
+}
+
+## Print usage help
+function print_usage {
+    echo "Usage: ${0} [options] [make_target] [make_parameters]
+
+Available parameters:
+  --version | -v                Print current ${0} version
+  --debug=true                  Print some debug messages
+  --verbose                     Tels make to print every command before executing it
+  -su | -self-update            Update current ${0}
+  -mi= | --makefile-install=    Install selected Makefile template to current directory
+  -mu | --makefile-update       Update Makefile in current directory
+  --makefile=                   Force use different Makefile
+
+Example 1: One make target without parameters:
+  - \$ ${0} version
+
+Example 2: One make target with parameters:
+  - \$ ${0} test some -extra --parameters
+
+Example 3: Update Makefile in current directory:
+  - \$ ${0} --makefile-update
+
+Example 4: Update Makefile in current directory and run target:
+  - \$ ${0} --makefile-update test some -extra --parameters"
+}
+
+function main {
+    if [ $# -eq 0 ]; then
+        print_usage
+        exit 0
+    fi
+
+    while [ $# -gt 0 ]; do
+        case "$1" in
+            --version|-v)
+                echo "${VERSION}"
+                exit 0
+                ;;
+            --debug=true)
+                DEBUG=true
+                shift
+                ;;
+            --verbose)
+                SILENT=false
+                shift
+                ;;
+            -su|--self-update)
+                echo "self-update"
+                shift
+                ;;
+            -mi=*|--makefile-install=*)
+                MAKEFILE_NAME="${i#*=}"
+                debug_echo "download selected makefile"
+                shift
+                ;;
+            -mu|--makefile-update)
+                debug_echo "update current makefile"
+                shift
+                ;;
+            --makefile=*)
+                MAKEFILE="${i#*=}"
+                shift
+                ;;
+#            --)
+#                shift ## strip -- and use next parameter as make target
+#                MAKE_TARGET=${1}
+#                shift
+#                break
+#                ;;
+            *)
+                MAKE_TARGET=${1}
+                shift
+                break
+                ;;
+        esac
+    done
+
+    MAKEOPTS="";
+    if ${SILENT} = true; then
+        MAKEOPTS="${MAKEOPTS} -s"
+    fi
+
+    debug_echo "Makefile: ${MAKEFILE}"
+
+    PARAMS=$@ $MAKE -f $MAKEFILE $MAKEOPTS $MAKE_TARGET
+}
+
+debug_echo "Working dir: ${PWD}"
+
+main $@
