@@ -17,7 +17,7 @@ mysql:
     - ./database:/var/lib/mysql
 
 composer:  
-   image: vojtabiberle/composer
+   image: vojtabiberle/composer-php7
    volumes:
      - ./:/var/www/website
      - ~/.composer:/composer
