@@ -30,6 +30,10 @@ function debug_echo {
     fi
 }
 
+function nyi_echo {
+    echo "not implemented yet :-/ ... sorry"
+}
+
 ## Print usage help
 function print_usage {
     echo "Usage: ${0} [options] [make_target] [make_parameters]
@@ -38,7 +42,7 @@ Available parameters:
   --version | -v                Print current ${0} version
   --debug=true                  Print some debug messages
   --verbose                     Tels make to print every command before executing it
-  -su | -self-update            Update current ${0}
+  -su | --self-update            Update current ${0}
   -mi= | --makefile-install=    Install selected Makefile template to current directory
   -mu | --makefile-update       Update Makefile in current directory
   --makefile=                   Force use different Makefile
@@ -78,14 +82,17 @@ function main {
                 ;;
             -su|--self-update)
                 echo "self-update"
+		nyi_echo
                 shift
                 ;;
             -mi=*|--makefile-install=*)
                 MAKEFILE_NAME="${i#*=}"
+		nyi_echo
                 debug_echo "download selected makefile"
                 shift
                 ;;
             -mu|--makefile-update)
+		nyi_echo
                 debug_echo "update current makefile"
                 shift
                 ;;
